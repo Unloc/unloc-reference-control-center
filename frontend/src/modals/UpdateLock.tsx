@@ -3,40 +3,27 @@ import * as unloc from "@unloc/integrator-client-library";
 import api from "../api";
 import Key from "../Key";
 import Share from "../Share";
+import AddressModal from "./Address";
 
 const UpdateLockModal = (props: any) => {
-  const {
-    open,
-    setOpen,
-    lock,
-    lockHolder,
-    runActions,
-    users,
-    keys,
-    roles,
-    notify,
-  } = props;
-  const close = () => {
-    setOpen(false);
-    setAddress(undefined);
-  };
-  const [name, setName] = useState((lock && lock.name) || "");
-  const [image, setImage] = useState<string | undefined>();
-  const [imageErrorMessage, setImageErrorMessage] = useState("");
-  const [address, setAddress] = useState<unloc.Address | undefined>(
-    lock?.address
-  );
-  const inputRef = useRef<HTMLInputElement>(null);
+  const {open, setOpen, lock, lockHolder, runActions, users, keys, roles, notify} = props
+  const close = () => {setOpen(false); setImageErrorMessage("")}
+  const [name, setName] = useState((lock && lock.name) || "")
+  const [image, setImage] = useState<string|undefined>()
+  const [imageErrorMessage, setImageErrorMessage] = useState("")
+  const [address, setAddress] = useState<unloc.Address|undefined>(lock?.address)
+  const [addressModalOpen, setAddressModalOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null)
 
   React.useEffect(() => {
     inputRef.current?.focus();
   }, [open]);
 
   React.useEffect(() => {
-    if (lock) {
-      setName(lock.name);
-      setImage(lock.imageUrl);
-      setAddress(lock.address);
+    if(lock) {
+      setName(lock.name)
+      setImage(lock.imageUrl)
+      setAddress(lock.address || "")
     }
   }, [lock]);
 
@@ -140,6 +127,7 @@ const UpdateLockModal = (props: any) => {
           <h3 className="is-size-3">Edit {lock && lock.name}</h3>
         </div>
         <div className="modal-card-body">
+          <AddressModal setOpen={setAddressModalOpen} open={addressModalOpen} lock={lock} lockHolder={lockHolder} runActions={runActions} />
           <div className="unloc-modal-form">
             <form onSubmit={submit}>
               <TextInput
@@ -160,6 +148,7 @@ const UpdateLockModal = (props: any) => {
                 {" "}
                 {address !== undefined ? "Edit address" : "Add address"}{" "}
               </button>
+              <button className="unloc-button" onClick={(e => setAddressModalOpen(true))}> {address != undefined ? "Edit address" : "Add address"} </button>
               <h3>Image</h3>
               <div>
                 {image && <img alt="Lock" src={image} />}
