@@ -22,7 +22,7 @@ const UserModal = (props: any) => {
   const keysShared = roles
     .map((role: unloc.Role) => role.createdKeys)
     .reduce(
-      (keysShared: number, createdKeys: number) => keysShared + createdKeys,
+      (keysShared: number, createdKeys: number) => createdKeys? keysShared + createdKeys : keysShared + 0,
       0
     );
   const close = () => {
