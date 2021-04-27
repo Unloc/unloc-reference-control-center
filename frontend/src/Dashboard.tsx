@@ -366,6 +366,11 @@ const Role = (props: any) => {
   const canShare = role && role.canShare ? role.canShare : false;
   const toggleCanShare = () => {
     addRole(lock.id, userId, !canShare);
+   if (!canShare) { 
+      if (activeKeys.length < 1) {
+        handleKeyClick(userId, lock)
+      }
+    }
   };
   const activeKeys = keys.filter((key: unloc.Key) => key.state !== "revoked");
   return (
