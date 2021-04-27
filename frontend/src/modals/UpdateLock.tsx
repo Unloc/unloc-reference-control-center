@@ -147,10 +147,10 @@ const UpdateLockModal = (props: any) => {
               <button className="unloc-button" onClick={(e => setAddressModalOpen(true))}> {address != undefined ? "Edit address" : "Add address"} </button>
               <h3>Image</h3>
               <div>
-                {image && image!="url" && <img alt="Lock" src={image} />}
+                {image && <img alt="Lock" src={image} />}
                 <button className="unloc-button">
                   <label>
-                    {image && image!="url" ? "Edit image" : "Add image"}
+                    {image ? "Edit image" : "Add image"}
                     <input
                       type="file"
                       accept="image/*"
