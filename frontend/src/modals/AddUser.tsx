@@ -97,6 +97,15 @@ const AddUserModal = (props: any) => {
     }
   };
 
+  const selectAll = () => {
+    setLocks(locks)
+    setRoles(locks)
+  }
+
+  const selectAllKeys = () => {
+    setLocks(locks)
+  }
+
   const addUsers = async () => {
     usersState.forEach((user) => {
       if (user.userName !== "" && isValidPhoneNumber(user.userId)) {
@@ -151,6 +160,11 @@ const AddUserModal = (props: any) => {
             </form>
             <div className="add-user__lock-grid">
               <h3>Access settings for users added</h3>
+              <div style={ { display:"flex", marginTop:"15px", marginBottom:"15px"} }>
+                <div style={{marginTop:"auto", marginBottom:"auto"}}>Select all: </div>
+                <button className="unloc-button" onClick={selectAllKeys}>Access</button>
+                <button className="unloc-button" onClick={selectAll}>Access with sharing</button>
+              </div>
               {locks.map((lock: any, i: number) => (
                 <Lock
                   key={i}
