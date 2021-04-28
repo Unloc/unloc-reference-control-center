@@ -29,23 +29,11 @@ const UpdateLockModal = (props: any) => {
 
   const submit = (ev: any) => {
     ev.preventDefault();
+    updateName();
   };
 
-  const update = async () => {
-    if (image !== lock.imageUrl) {
-      try {
-        await api.updateLock(lockHolder, lock.id, name, image);
-      } catch (err) {
-        setImageErrorMessage(
-          err.errorDescription + ". Check that the file is an image."
-        );
-        return;
-      }
-    } else {
-      await api.updateLock(lockHolder, lock.id, name, undefined, address);
-    }
-    close();
-    notify();
+  const updateName = async () => {
+    await api.updateLock(lockHolder, lock.id, name)
     await runActions();
   };
 
@@ -58,9 +46,18 @@ const UpdateLockModal = (props: any) => {
       }
       const reader = new FileReader();
 
-      reader.onload = function () {
+      reader.onload = async () => {
         if (reader.result) {
           setImage(reader.result.toString());
+          try {
+            await api.updateLock(lockHolder, lock.id, name, reader.result.toString());
+          } catch (err) {
+            setImageErrorMessage(
+              err.errorDescription + ". Check that the file is an image."
+            );
+            return;
+          }
+          await runActions();
         }
       };
       reader.readAsDataURL(file);
@@ -129,6 +126,7 @@ const UpdateLockModal = (props: any) => {
         <div className="modal-card-body">
           <AddressModal setOpen={setAddressModalOpen} open={addressModalOpen} lock={lock} lockHolder={lockHolder} runActions={runActions} />
           <div className="unloc-modal-form">
+            <h3>Lock name</h3>
             <form onSubmit={submit}>
               <TextInput
                 reference={inputRef}
@@ -136,6 +134,8 @@ const UpdateLockModal = (props: any) => {
                 value={name}
                 onChange={(e: any) => setName(e.target.value)}
               />
+              <button className="unloc-button" type="submit"> Save name </button>
+            </form>
               <h3>Address</h3>
               <div>
                 {address && (
@@ -162,7 +162,6 @@ const UpdateLockModal = (props: any) => {
                   <div className="error-message">{imageErrorMessage}</div>
                 )}
               </div>
-            </form>
             <h3>All users</h3>
             <div style={{ display: "flex" }}>
               <button
@@ -191,9 +190,6 @@ const UpdateLockModal = (props: any) => {
         <div className="modal-card-foot">
           <button className="unloc-button unloc-button--big" onClick={close}>
             Cancel
-          </button>
-          <button className="unloc-button unloc-button--big unloc-button--light-green" onClick={update}>
-            Save
           </button>
         </div>
       </div>
