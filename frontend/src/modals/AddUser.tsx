@@ -23,7 +23,7 @@ const AddUserModal = (props: any) => {
   const user: any = { userId: "", errorInUserForm: false };
   const [usersState, setUsersState] = useState([{ ...user }]);
   const [selectedRoles, setRoles] = useState<unloc.Lock[]>([]);
-  const [selectedLocks, setLocks] = useState<unloc.Lock[]>([]);
+  const [selectedKeys, setKeys] = useState<unloc.Lock[]>([]);
 
   const submit = (ev: any) => {
     ev.preventDefault();
@@ -64,15 +64,15 @@ const AddUserModal = (props: any) => {
   };
 
   const handleKeyClick = (selectedLock: unloc.Lock) => {
-    const selected = selectedLocks.find(
+    const selected = selectedKeys.find(
       (lock: unloc.Lock) => lock.id === selectedLock.id
     );
     if (selected) {
-      setLocks((selectedLocks) =>
-        selectedLocks.filter((lock: unloc.Lock) => lock !== selected)
+      setKeys((selectedKeys) =>
+      selectedKeys.filter((lock: unloc.Lock) => lock !== selected)
       );
     } else {
-      setLocks((selectedLocks) => [...selectedLocks, selectedLock]);
+      setKeys((selectedKeys) => [...selectedKeys, selectedLock]);
     }
   };
 
@@ -86,28 +86,28 @@ const AddUserModal = (props: any) => {
       );
     } else {
       setRoles((selectedRoles) => [...selectedRoles, selectedLock]);
-      const activeKey = selectedLocks.find(
+      const activeKey = selectedKeys.find(
         (l: unloc.Lock) => l === selectedLock
       );
       if (!activeKey) {
-        setLocks((selectedLocks) => [...selectedLocks, selectedLock]);
+        setKeys((selectedKeys) => [...selectedKeys, selectedLock]);
       }
     }
   };
 
   const selectAll = () => {
-    setLocks(locks)
+    setKeys(locks)
     setRoles(locks)
   }
 
   const selectAllKeys = () => {
-    setLocks(locks)
+    setKeys(locks)
   }
 
   const addUsers = async () => {
     usersState.forEach((user) => {
       if (isValidPhoneNumber(user.userId)) {
-        selectedLocks.forEach(async (lock: unloc.Lock) => {
+        selectedKeys.forEach(async (lock: unloc.Lock) => {
           await api.createKey(
             selectedLockHolder,
             lock.id,
@@ -168,7 +168,7 @@ const AddUserModal = (props: any) => {
                   key={i}
                   lock={lock}
                   selectedRoles={selectedRoles}
-                  selectedLocks={selectedLocks}
+                  selectedKeys={selectedKeys}
                   handleKeyClick={handleKeyClick}
                   toggleCanShare={toggleCanShare}
                 />
@@ -183,7 +183,7 @@ const AddUserModal = (props: any) => {
           <button
             className="unloc-button unloc-button--dark-green"
             onClick={addUsers}
-            disabled={usersState.length < 2 || (selectedLocks.length < 1 && selectedRoles.length < 1)}
+            disabled={usersState.length < 2 || (selectedKeys.length < 1 && selectedRoles.length < 1)}
           >
             Done
           </button>
@@ -255,12 +255,12 @@ const Lock = (props: any) => {
   const {
     lock,
     selectedRoles,
-    selectedLocks,
+    selectedKeys,
     handleKeyClick,
     toggleCanShare,
   } = props;
   const canShare = selectedRoles.find((s: unloc.Lock) => s === lock);
-  const activeKey = selectedLocks.find((l: unloc.Lock) => l === lock);
+  const activeKey = selectedKeys.find((l: unloc.Lock) => l === lock);
   return (
     <div className="add-user__lock-column">
       <div className="add-user__lock-heading">{lock.name}</div>
