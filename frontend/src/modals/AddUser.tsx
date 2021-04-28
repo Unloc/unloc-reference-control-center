@@ -20,7 +20,7 @@ const AddUserModal = (props: any) => {
   const close = () => {
     setOpen(false);
   };
-  const user: any = { userId: "", userName: "", errorInUserForm: false };
+  const user: any = { userId: "", errorInUserForm: false };
   const [usersState, setUsersState] = useState([{ ...user }]);
   const [selectedRoles, setRoles] = useState<unloc.Lock[]>([]);
   const [selectedLocks, setLocks] = useState<unloc.Lock[]>([]);
@@ -34,7 +34,6 @@ const AddUserModal = (props: any) => {
     updatedUsers[e.target.dataset.idx][e.target.name] = e.target.value;
     setUsersState(updatedUsers);
     if (
-      usersState[usersState.length - 1].userName !== "" &&
       isValidPhoneNumber(usersState[usersState.length - 1].userId)
     ) {
       addUserFields();
@@ -46,7 +45,6 @@ const AddUserModal = (props: any) => {
     updatedUsers[idx].userId = value;
     setUsersState(updatedUsers);
     if (
-      usersState[usersState.length - 1].userName !== "" &&
       isValidPhoneNumber(usersState[usersState.length - 1].userId)
     ) {
       addUserFields();
@@ -108,7 +106,7 @@ const AddUserModal = (props: any) => {
 
   const addUsers = async () => {
     usersState.forEach((user) => {
-      if (user.userName !== "" && isValidPhoneNumber(user.userId)) {
+      if (isValidPhoneNumber(user.userId)) {
         selectedLocks.forEach(async (lock: unloc.Lock) => {
           await api.createKey(
             selectedLockHolder,
@@ -126,7 +124,7 @@ const AddUserModal = (props: any) => {
             lock.id,
             user.userId,
             true,
-            user.userName
+            ""
           );
         });
       }
@@ -185,6 +183,7 @@ const AddUserModal = (props: any) => {
           <button
             className="unloc-button unloc-button--dark-green"
             onClick={addUsers}
+            disabled={usersState.length < 2 || (selectedLocks.length < 1 && selectedRoles.length < 1)}
           >
             Done
           </button>
@@ -204,16 +203,6 @@ const UserInputs = (props: any) => {
   } = props;
   return (
     <div className="add-user__user-input" key={idx}>
-      <label>Name* </label>
-      <div className="add-user__input-field">
-        <TextInput
-          className="add-user__input"
-          name="userName"
-          data-idx={idx}
-          onChange={handleUserChange}
-        />
-        {usersState[idx].userName !== "" && <FontAwesomeIcon icon={faCheck} />}
-      </div>
       <label>Phone number* </label>
       <div className="add-user__input-field">
         <PhoneInput
@@ -240,17 +229,8 @@ const UserInputs = (props: any) => {
 const DisabledInputs = (props: any) => {
   return (
     <div className="add-user__user-input add-user__user-input--disabled">
-      <label>Name* </label>
-      <TextInput className="add-user__input" disabled={true} />
       <label>Phone number* </label>
-      <PhoneInput
-        className="add-user__input--disabled"
-        international
-        defaultCountry="NO"
-        value={""}
-        onChange={(value) => props.handleIdChange(0, value)}
-        disabled={true}
-      />
+      <TextInput className="add-user__input" disabled={true} />
     </div>
   );
 };

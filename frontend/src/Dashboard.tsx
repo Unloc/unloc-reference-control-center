@@ -71,7 +71,7 @@ const Dashboard = (props: DashboardProps) => {
   const [filteredUsers, setFilteredUsers] = useState<any[]>(users);
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [userModalData, setUserModalData] = useState<any>({
-    userId: "",
+    user: "",
     roles: [],
     keys: [],
   });
@@ -109,18 +109,17 @@ const Dashboard = (props: DashboardProps) => {
     }
   };
 
-  const openUserModal = (userId: String, userName: String) => {
+  const openUserModal = (user: unloc.User) => {
     const userKeys = keys.filter(
-      (key: unloc.Key) => key.toUser.id === userId && key.state !== "revoked"
+      (key: unloc.Key) => key.toUser.id === user.userId && key.state !== "revoked"
     );
     const userRoles = roles.filter(
-      (role: unloc.Role) => role.userId === userId
+      (role: unloc.Role) => role.userId === user.userId
     );
     setUserModalData({
-      userId: userId,
+      user: user,
       roles: userRoles,
       keys: userKeys,
-      userDisplayName: userName,
     });
     setUserModalOpen(true);
   };
@@ -298,7 +297,7 @@ const Dashboard = (props: DashboardProps) => {
                     <th>
                       <div
                         className="unloc-dashboard__user"
-                        onClick={() => openUserModal(userId, userDisplayName)}
+                        onClick={() => openUserModal(user)}
                       >
                         <div>{userDisplayName ? userDisplayName : userId}</div>
                       </div>

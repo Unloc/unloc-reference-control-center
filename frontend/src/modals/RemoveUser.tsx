@@ -8,8 +8,7 @@ const RemoveUserModal = (props: any) => {
     selectedLockHolder,
     roles,
     keys,
-    userId,
-    userDisplayName,
+    user,
     runActions,
     closeUserModal,
     notify,
@@ -27,16 +26,16 @@ const RemoveUserModal = (props: any) => {
       await api.createOrUpdateRole(
         selectedLockHolder,
         role.lockId,
-        userId,
+        user.userId,
         false
       );
     });
 
-    await api.deleteSharedKeys(selectedLockHolder, userId);
+    await api.deleteSharedKeys(selectedLockHolder, user.userId);
 
     close();
     closeUserModal();
-    notify(userDisplayName + " and all shared keys was deleted.");
+    notify(user.userDisplayName ? user.userDisplayName : user.userId + " and all shared keys was deleted.");
     await runActions();
   };
 
@@ -49,8 +48,8 @@ const RemoveUserModal = (props: any) => {
         </div>
         <div className="modal-card-body">
           <div>
-            {userDisplayName} will no longer be able to access{" "}
-            {selectedLockHolder.name}. Accesses shared by {userDisplayName} will
+            {user.userDisplayName ? user.userDisplayName : user.userId} will no longer be able to access{" "}
+            {selectedLockHolder.name}. Accesses shared by {user.userDisplayName ? user.userDisplayName : user.userId} will
             be lost.
           </div>
           <button className="button is-medium primary" onClick={close}>

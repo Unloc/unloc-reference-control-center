@@ -10,8 +10,7 @@ const UserModal = (props: any) => {
     open,
     setOpen,
     locks,
-    userId,
-    userDisplayName,
+    user,
     keys,
     roles,
     selectedLockHolder,
@@ -35,7 +34,7 @@ const UserModal = (props: any) => {
         await api.createKey(
           selectedLockHolder,
           lock.id,
-          userId,
+          user.userId,
           null,
           null,
           false
@@ -45,12 +44,12 @@ const UserModal = (props: any) => {
     close();
     if (notifyOfSharing) {
       notify(
-        userDisplayName +
+        user.userDisplayName +
           " has been given access to all doors" +
           notifyOfSharing
       );
     } else {
-      notify(userDisplayName + " has been given access to all doors");
+      notify(user.userDisplayName + " has been given access to all doors");
     }
     await runActions();
   };
@@ -59,7 +58,7 @@ const UserModal = (props: any) => {
     createKeysForAllLocks(" with sharing");
     locks.forEach(async (lock: unloc.Lock) => {
       if (!roles.find((role: unloc.Role) => role.lockId === lock.id)) {
-        await api.createOrUpdateRole(selectedLockHolder, lock.id, userId, true);
+        await api.createOrUpdateRole(selectedLockHolder, lock.id, user.userId, true);
       }
     });
     close();
@@ -81,8 +80,7 @@ const UserModal = (props: any) => {
           selectedLockHolder={selectedLockHolder}
           keys={keys}
           roles={roles}
-          userId={userId}
-          userDisplayName={userDisplayName}
+          user={user}
           runActions={runActions}
           closeUserModal={close}
           notify={notify}
@@ -91,17 +89,21 @@ const UserModal = (props: any) => {
           <h3 className="is-size-3">Edit user</h3>
         </div>
         <div className="modal-card-body">
-          {userDisplayName && (
+          {user.userDisplayName && (
             <>
               <h3>Name</h3>
-              {userDisplayName}
+              {user.userDisplayName}
             </>
           )}
           <h3>Phone number</h3>
-          <span className="unloc-edit-user__phone-number">{userId}</span>
+          <span className="unloc-edit-user__phone-number">{user.userId}</span>
           <div className="unloc-edit-user__helper-text">
             If you want to change this users phone number you have to first
             remove them, and then add them with the new number.
+          </div>
+          <div>
+            {user.profilePicture && <h3>Profile picture</h3>}
+            {user.profilePicture && <img src={user.profilePicture} />}
           </div>
           <div className="unloc-edit-user__sharing-text">
             <span>Currently sharing access with </span>

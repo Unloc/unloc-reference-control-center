@@ -27,23 +27,24 @@ const useApp = () => {
     keys: unloc.Key[]
   ) => {
     let users = [
-      ...roles.map((role: any) => ({
-        userId: role.userId,
-        userDisplayName: role.userName,
-        keysCount: 0,
-        rolesCount: 0,
-      })),
       ...keys
         .filter((key: any) => key.state !== "revoked")
         .map((key: any) => ({
           userId: key.toUser.id,
-          userDisplayName: key.toUser.userName,
+          userDisplayName: key.toUser.name,
           keysCount: 0,
           rolesCount: 0,
+          profilePicture: key.toUser.imageUrl,
         })),
+      ...roles.map((role: any) => ({
+        userId: role.userId,
+        userDisplayName: "",
+        keysCount: 0,
+        rolesCount: 0,
+      })),
     ];
     const uniqueUsers = getUniqueUsers(users);
-    setUsers(uniqueUsers.sort());
+    setUsers(uniqueUsers.sort((a, b) => (a.userDisplayName > b.userDisplayName) ? 1 : ((b.userDisplayName > a.userDisplayName) ? -1 : 0)));
   };
 
   const getUniqueUsers = (users: unloc.User[]) => {
