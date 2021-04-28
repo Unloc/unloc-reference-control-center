@@ -197,7 +197,6 @@ const UserInputs = (props: any) => {
   const {
     idx,
     usersState,
-    handleUserChange,
     handleIdChange,
     showErrorIfInvalidPhone,
   } = props;

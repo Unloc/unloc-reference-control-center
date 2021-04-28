@@ -144,7 +144,7 @@ const UpdateLockModal = (props: any) => {
                   </div>
                 )}
               </div>
-              <button className="unloc-button" onClick={(e => setAddressModalOpen(true))}> {address != undefined ? "Edit address" : "Add address"} </button>
+              <button className="unloc-button" onClick={(e => setAddressModalOpen(true))}> {address !== undefined ? "Edit address" : "Add address"} </button>
               <h3>Image</h3>
               <div>
                 {image && <img alt="Lock" src={image} />}

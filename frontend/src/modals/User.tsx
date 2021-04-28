@@ -103,7 +103,7 @@ const UserModal = (props: any) => {
           </div>
           <div>
             {user.profilePicture && <h3>Profile picture</h3>}
-            {user.profilePicture && <img src={user.profilePicture} />}
+            {user.profilePicture && <img src={user.profilePicture} alt="User." />}
           </div>
           <div className="unloc-edit-user__sharing-text">
             <span>Currently sharing access with </span>
