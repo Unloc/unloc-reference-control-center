@@ -16,49 +16,34 @@ import Share from "./Share";
 import Search from "./assets/search.svg";
 import ChevronLeft from "./ChevronLeft";
 import ChevronRight from "./ChevronRight";
+import {useGlobal} from "./AppContext"
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-interface DashboardProps {
-  lockHolders: unloc.LockHolder[];
-  selectedLockHolder: unloc.LockHolder;
-  setSelectedLockHolder: any;
-  getAllDataForLockHolder: Function;
-  revokeKey: Function;
-  createKey: Function;
-  addRole: Function;
-  deleteSharedKeys: Function;
-  updateLockName: Function;
-  updateLockHolderName: Function;
-  loadingMainData: boolean;
-  keys: unloc.Key[];
-  locks: unloc.Lock[];
-  roles: unloc.Role[];
-  users: [];
-  actions: Function[];
-  runActions: Function;
-  undo: Function;
-}
-
-const Dashboard = (props: DashboardProps) => {
+const Dashboard = () => {
+  const { state, commands } = useGlobal()
   const {
     lockHolders,
     selectedLockHolder,
-    setSelectedLockHolder,
     keys,
     locks,
     users,
     roles,
-    addRole,
-    updateLockName,
-    updateLockHolderName,
+    actions,
     loadingMainData,
+  } = state;
+  const {
+    setSelectedLockHolder,
+    updateLockHolderName,
+    addRole,
+    removeRole,
     revokeKey,
     createKey,
-    actions,
+    updateLock,
     undo,
     runActions,
-  } = props;
+  } = commands;
+
   const [addUserModalOpen, setAddUserModalOpen] = useState(false);
   const [lockHolderIndex, setLockHolderIndex] = useState(-1);
   const [lockHolderModalOpen, setLockHolderModalOpen] = useState(false);
@@ -102,7 +87,6 @@ const Dashboard = (props: DashboardProps) => {
         key.state !== "revoked"
     );
     if (localKey) {
-      console.log("Revoking key ", localKey);
       revokeKey(lock.id, localKey.id, userId);
     } else {
       createKey(lock.id, userId, null, null);
@@ -150,12 +134,16 @@ const Dashboard = (props: DashboardProps) => {
         lockHolder={selectedLockHolder}
       />
       <UpdateLockModal
-        updateLockName={updateLockName}
         setOpen={setUpdateLockModalOpen}
         open={updateLockModalOpen}
         lock={selectedLock}
         runActions={runActions}
         lockHolder={selectedLockHolder}
+        updateLock={updateLock}
+        revokeKey={revokeKey}
+        createKey={createKey}
+        addRole={addRole}
+        removeRole={removeRole}
         notify={notify}
         {...lockModalData}
       />
@@ -218,7 +206,7 @@ const Dashboard = (props: DashboardProps) => {
         </div>
       </header>
       <main className={mainClassNames}>
-        {loadingMainData && roles.length === 0 && <Loading />}
+        {loadingMainData && roles && roles.length === 0 && <Loading />}
         {actions.length > 0 && (
           <div className="unloc-dashboard__confirm-undo">
             <button className="button is-primary" onClick={() => undo()}>

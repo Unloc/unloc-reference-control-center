@@ -56,10 +56,10 @@ const getLockHolderToken = async (
     await getToken(lockHolder);
     token = ScopedAccessTokens[lockHolder.name];
   }
-  if (!token.accessToken || !token.lockHolderId) {
+  if (!token.accessToken) {
     throw new Error("Could not get access token for lockHolder");
   }
-  return [token.accessToken, token.lockHolderId];
+  return [token.accessToken, lockHolder.id];
 };
 
 const getScopedToken = async (scope: unloc.LockHolder) => {
