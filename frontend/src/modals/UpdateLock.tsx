@@ -1,19 +1,39 @@
 import React, { useState, useRef } from "react";
 import * as unloc from "@unloc/integrator-client-library";
-import api from "../api";
 import Key from "../Key";
 import Share from "../Share";
 import AddressModal from "./Address";
+/* import {useGlobal} from "../AppContext" */
 
 const UpdateLockModal = (props: any) => {
-  const {open, setOpen, lock, lockHolder, runActions, users, keys, roles, notify} = props
-  const close = () => {setOpen(false); setImageErrorMessage("")}
-  const [name, setName] = useState((lock && lock.name) || "")
-  const [image, setImage] = useState<string|undefined>()
-  const [imageErrorMessage, setImageErrorMessage] = useState("")
-  const [address, setAddress] = useState<unloc.Address|undefined>(lock?.address)
+  const {
+    open,
+    setOpen,
+    lock,
+    lockHolder,
+    updateLock,
+    runActions,
+    createKey,
+    revokeKey,
+    addRole,
+    removeRole,
+    users,
+    keys,
+    roles,
+    notify,
+  } = props;
+  const close = () => {
+    setOpen(false);
+    setAddress(undefined);
+  };
+  const [name, setName] = useState((lock && lock.name) || "");
+  const [image, setImage] = useState<string | undefined>();
+  const [imageErrorMessage, setImageErrorMessage] = useState("");
+  const [address, setAddress] = useState<unloc.Address | undefined>(
+    lock?.address
+  );
   const [addressModalOpen, setAddressModalOpen] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     inputRef.current?.focus();
@@ -34,7 +54,7 @@ const UpdateLockModal = (props: any) => {
   const update = async () => {
     if (image !== lock.imageUrl) {
       try {
-        await api.updateLock(lockHolder, lock.id, name, image);
+        updateLock(lock.id, name, image, address)
       } catch (err) {
         setImageErrorMessage(
           err.errorDescription + ". Check that the file is an image."
@@ -42,11 +62,10 @@ const UpdateLockModal = (props: any) => {
         return;
       }
     } else {
-      await api.updateLock(lockHolder, lock.id, name, undefined, address);
+      updateLock(lock.id, name, undefined, address)
     }
     close();
     notify();
-    await runActions();
   };
 
   const onImageChange = (ev: any) => {
@@ -68,10 +87,9 @@ const UpdateLockModal = (props: any) => {
   };
 
   const createKeysForAllUsers = async (notifyOfRoles?: string) => {
-    users.forEach(async (user: unloc.User) => {
+    for(let user of users) {
       if (!keys.find((key: unloc.Key) => key.toUser.id === user.userId)) {
-        await api.createKey(
-          lockHolder,
+        createKey(
           lock.id,
           user.userId,
           null,
@@ -79,44 +97,29 @@ const UpdateLockModal = (props: any) => {
           false
         );
       }
-    });
-    close();
-    if (notifyOfRoles) {
-      notify(
-        "All users have been given access to " + lock.name + notifyOfRoles
-      );
-    } else {
-      notify("All users have been given access to " + lock.name);
     }
-    await runActions();
+    close();
   };
 
   const createKeysAndRolesForAllUsers = async () => {
     createKeysForAllUsers(" with sharing rights.");
-    users.forEach(async (user: unloc.User) => {
+    for(let user of users) {
       if (!roles.find((role: unloc.Role) => role.userId === user.userId)) {
-        await api.createOrUpdateRole(lockHolder, lock.id, user.userId, true);
+        addRole(lock.id, user.userId, true)
       }
-    });
+    }
     close();
-    await runActions();
   };
 
   const revokeAccesses = async () => {
-    keys.forEach(async (key: unloc.Key) => {
-      await api.deleteSharedKeysForLock(lockHolder, lock.id, key.toUser.id);
-      await api.updateKey(lockHolder, lock.id, key.id, "revoked");
-    });
-
-    roles.forEach(async (role: unloc.Role) => {
-      await api.deleteSharedKeysForLock(lockHolder, lock.id, role.userId);
-      await api.createOrUpdateRole(lockHolder, lock.id, role.userId, false);
-    });
+    (keys.map((key: unloc.Key) => revokeKey(lock.id, key.id, key.toUser.id)));
+    (roles.map((role: unloc.Role) => 
+       removeRole(lock.id, role.userId)
+    ));
     close();
     notify(
       "All accesses to " + lock.name + " have been removed from all users."
     );
-    await runActions();
   };
 
   return (
@@ -144,11 +147,7 @@ const UpdateLockModal = (props: any) => {
                   </div>
                 )}
               </div>
-              <button className="unloc-button">
-                {" "}
-                {address !== undefined ? "Edit address" : "Add address"}{" "}
-              </button>
-              <button className="unloc-button" onClick={(e => setAddressModalOpen(true))}> {address != undefined ? "Edit address" : "Add address"} </button>
+              <button className="unloc-button" onClick={(_ => setAddressModalOpen(true))}> {address != undefined ? "Edit address" : "Add address"} </button>
               <h3>Image</h3>
               <div>
                 {image && <img alt="Lock" src={image} />}
