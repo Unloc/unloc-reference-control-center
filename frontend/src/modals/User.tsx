@@ -14,6 +14,8 @@ const UserModal = (props: any) => {
     keys,
     roles,
     selectedLockHolder,
+    addRole,
+    createKey,
     runActions,
     notify,
   } = props;
@@ -31,14 +33,7 @@ const UserModal = (props: any) => {
   const createKeysForAllLocks = async (notifyOfSharing?: string) => {
     locks.forEach(async (lock: unloc.Lock) => {
       if (!keys.find((key: unloc.Key) => key.lockId === lock.id)) {
-        await api.createKey(
-          selectedLockHolder,
-          lock.id,
-          user.userId,
-          null,
-          null,
-          false
-        );
+        createKey(lock.id, user.userId, null, null, false)
       }
     });
     close();
@@ -51,18 +46,16 @@ const UserModal = (props: any) => {
     } else {
       notify(user.userDisplayName + " has been given access to all doors");
     }
-    await runActions();
   };
 
   const createKeysAndRolesForAllLocks = async () => {
     createKeysForAllLocks(" with sharing");
     locks.forEach(async (lock: unloc.Lock) => {
       if (!roles.find((role: unloc.Role) => role.lockId === lock.id)) {
-        await api.createOrUpdateRole(selectedLockHolder, lock.id, user.userId, true);
+        addRole(lock.id, user.userId, true)
       }
     });
     close();
-    await runActions();
   };
 
   const save = async () => {

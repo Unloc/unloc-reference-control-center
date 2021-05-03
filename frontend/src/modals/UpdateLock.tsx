@@ -49,7 +49,7 @@ const UpdateLockModal = (props: any) => {
 
   const submit = (ev: any) => {
     ev.preventDefault();
-    updateName();
+    update();
   };
 
 
@@ -67,7 +67,6 @@ const UpdateLockModal = (props: any) => {
       updateLock(lock.id, name, undefined, address)
     }
     close();
-    notify();
   };
 
   const onImageChange = (ev: any) => {
@@ -83,7 +82,7 @@ const UpdateLockModal = (props: any) => {
         if (reader.result) {
           setImage(reader.result.toString());
           try {
-            await api.updateLock(lockHolder, lock.id, name, reader.result.toString());
+            updateLock(lockHolder, lock.id, name, reader.result.toString());
           } catch (err) {
             setImageErrorMessage(
               err.errorDescription + ". Check that the file is an image."

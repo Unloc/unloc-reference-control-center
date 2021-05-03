@@ -158,6 +158,8 @@ const Dashboard = () => {
       <UserModal
         setOpen={setUserModalOpen}
         open={userModalOpen}
+        createKey={createKey}
+        addRole={addRole}
         runActions={runActions}
         selectedLockHolder={selectedLockHolder}
         locks={locks}
