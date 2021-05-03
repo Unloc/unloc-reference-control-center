@@ -20,10 +20,10 @@ const AddUserModal = (props: any) => {
   const close = () => {
     setOpen(false);
   };
-  const user: any = { userId: "", userName: "", errorInUserForm: false };
+  const user: any = { userId: "", errorInUserForm: false };
   const [usersState, setUsersState] = useState([{ ...user }]);
   const [selectedRoles, setRoles] = useState<unloc.Lock[]>([]);
-  const [selectedLocks, setLocks] = useState<unloc.Lock[]>([]);
+  const [selectedKeys, setKeys] = useState<unloc.Lock[]>([]);
 
   const submit = (ev: any) => {
     ev.preventDefault();
@@ -34,7 +34,6 @@ const AddUserModal = (props: any) => {
     updatedUsers[e.target.dataset.idx][e.target.name] = e.target.value;
     setUsersState(updatedUsers);
     if (
-      usersState[usersState.length - 1].userName !== "" &&
       isValidPhoneNumber(usersState[usersState.length - 1].userId)
     ) {
       addUserFields();
@@ -46,7 +45,6 @@ const AddUserModal = (props: any) => {
     updatedUsers[idx].userId = value;
     setUsersState(updatedUsers);
     if (
-      usersState[usersState.length - 1].userName !== "" &&
       isValidPhoneNumber(usersState[usersState.length - 1].userId)
     ) {
       addUserFields();
@@ -66,15 +64,15 @@ const AddUserModal = (props: any) => {
   };
 
   const handleKeyClick = (selectedLock: unloc.Lock) => {
-    const selected = selectedLocks.find(
+    const selected = selectedKeys.find(
       (lock: unloc.Lock) => lock.id === selectedLock.id
     );
     if (selected) {
-      setLocks((selectedLocks) =>
-        selectedLocks.filter((lock: unloc.Lock) => lock !== selected)
+      setKeys((selectedKeys) =>
+      selectedKeys.filter((lock: unloc.Lock) => lock !== selected)
       );
     } else {
-      setLocks((selectedLocks) => [...selectedLocks, selectedLock]);
+      setKeys((selectedKeys) => [...selectedKeys, selectedLock]);
     }
   };
 
@@ -88,19 +86,28 @@ const AddUserModal = (props: any) => {
       );
     } else {
       setRoles((selectedRoles) => [...selectedRoles, selectedLock]);
-      const activeKey = selectedLocks.find(
+      const activeKey = selectedKeys.find(
         (l: unloc.Lock) => l === selectedLock
       );
       if (!activeKey) {
-        setLocks((selectedLocks) => [...selectedLocks, selectedLock]);
+        setKeys((selectedKeys) => [...selectedKeys, selectedLock]);
       }
     }
   };
 
+  const selectAll = () => {
+    setKeys(locks)
+    setRoles(locks)
+  }
+
+  const selectAllKeys = () => {
+    setKeys(locks)
+  }
+
   const addUsers = async () => {
     usersState.forEach((user) => {
-      if (user.userName !== "" && isValidPhoneNumber(user.userId)) {
-        selectedLocks.forEach(async (lock: unloc.Lock) => {
+      if (isValidPhoneNumber(user.userId)) {
+        selectedKeys.forEach(async (lock: unloc.Lock) => {
           await api.createKey(
             selectedLockHolder,
             lock.id,
@@ -117,7 +124,7 @@ const AddUserModal = (props: any) => {
             lock.id,
             user.userId,
             true,
-            user.userName
+            ""
           );
         });
       }
@@ -151,12 +158,17 @@ const AddUserModal = (props: any) => {
             </form>
             <div className="add-user__lock-grid">
               <h3>Access settings for users added</h3>
+              <div style={ { display:"flex", marginTop:"15px", marginBottom:"15px"} }>
+                <div style={{marginTop:"auto", marginBottom:"auto"}}>Select all: </div>
+                <button className="unloc-button" onClick={selectAllKeys}>Access</button>
+                <button className="unloc-button" onClick={selectAll}>Access with sharing</button>
+              </div>
               {locks.map((lock: any, i: number) => (
                 <Lock
                   key={i}
                   lock={lock}
                   selectedRoles={selectedRoles}
-                  selectedLocks={selectedLocks}
+                  selectedKeys={selectedKeys}
                   handleKeyClick={handleKeyClick}
                   toggleCanShare={toggleCanShare}
                 />
@@ -171,6 +183,7 @@ const AddUserModal = (props: any) => {
           <button
             className="unloc-button unloc-button--dark-green"
             onClick={addUsers}
+            disabled={usersState.length < 2 || (selectedKeys.length < 1 && selectedRoles.length < 1)}
           >
             Done
           </button>
@@ -184,22 +197,11 @@ const UserInputs = (props: any) => {
   const {
     idx,
     usersState,
-    handleUserChange,
     handleIdChange,
     showErrorIfInvalidPhone,
   } = props;
   return (
     <div className="add-user__user-input" key={idx}>
-      <label>Name* </label>
-      <div className="add-user__input-field">
-        <TextInput
-          className="add-user__input"
-          name="userName"
-          data-idx={idx}
-          onChange={handleUserChange}
-        />
-        {usersState[idx].userName !== "" && <FontAwesomeIcon icon={faCheck} />}
-      </div>
       <label>Phone number* </label>
       <div className="add-user__input-field">
         <PhoneInput
@@ -226,17 +228,8 @@ const UserInputs = (props: any) => {
 const DisabledInputs = (props: any) => {
   return (
     <div className="add-user__user-input add-user__user-input--disabled">
-      <label>Name* </label>
-      <TextInput className="add-user__input" disabled={true} />
       <label>Phone number* </label>
-      <PhoneInput
-        className="add-user__input--disabled"
-        international
-        defaultCountry="NO"
-        value={""}
-        onChange={(value) => props.handleIdChange(0, value)}
-        disabled={true}
-      />
+      <TextInput className="add-user__input" disabled={true} />
     </div>
   );
 };
@@ -261,12 +254,12 @@ const Lock = (props: any) => {
   const {
     lock,
     selectedRoles,
-    selectedLocks,
+    selectedKeys,
     handleKeyClick,
     toggleCanShare,
   } = props;
   const canShare = selectedRoles.find((s: unloc.Lock) => s === lock);
-  const activeKey = selectedLocks.find((l: unloc.Lock) => l === lock);
+  const activeKey = selectedKeys.find((l: unloc.Lock) => l === lock);
   return (
     <div className="add-user__lock-column">
       <div className="add-user__lock-heading">{lock.name}</div>

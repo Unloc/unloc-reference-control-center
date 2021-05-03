@@ -56,7 +56,7 @@ const Dashboard = () => {
   const [filteredUsers, setFilteredUsers] = useState<any[]>(users);
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [userModalData, setUserModalData] = useState<any>({
-    userId: "",
+    user: "",
     roles: [],
     keys: [],
   });
@@ -93,18 +93,17 @@ const Dashboard = () => {
     }
   };
 
-  const openUserModal = (userId: String, userName: String) => {
+  const openUserModal = (user: unloc.User) => {
     const userKeys = keys.filter(
-      (key: unloc.Key) => key.toUser.id === userId && key.state !== "revoked"
+      (key: unloc.Key) => key.toUser.id === user.userId && key.state !== "revoked"
     );
     const userRoles = roles.filter(
-      (role: unloc.Role) => role.userId === userId
+      (role: unloc.Role) => role.userId === user.userId
     );
     setUserModalData({
-      userId: userId,
+      user: user,
       roles: userRoles,
       keys: userKeys,
-      userDisplayName: userName,
     });
     setUserModalOpen(true);
   };
@@ -159,6 +158,8 @@ const Dashboard = () => {
       <UserModal
         setOpen={setUserModalOpen}
         open={userModalOpen}
+        createKey={createKey}
+        addRole={addRole}
         runActions={runActions}
         selectedLockHolder={selectedLockHolder}
         locks={locks}
@@ -286,7 +287,7 @@ const Dashboard = () => {
                     <th>
                       <div
                         className="unloc-dashboard__user"
-                        onClick={() => openUserModal(userId, userDisplayName)}
+                        onClick={() => openUserModal(user)}
                       >
                         <div>{userDisplayName ? userDisplayName : userId}</div>
                       </div>
@@ -354,6 +355,11 @@ const Role = (props: any) => {
   const canShare = role && role.canShare ? role.canShare : false;
   const toggleCanShare = () => {
     addRole(lock.id, userId, !canShare);
+   if (!canShare) { 
+      if (activeKeys.length < 1) {
+        handleKeyClick(userId, lock)
+      }
+    }
   };
   const activeKeys = keys.filter((key: unloc.Key) => key.state !== "revoked");
   return (
