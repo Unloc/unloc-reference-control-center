@@ -66,7 +66,6 @@ const UpdateLockModal = (props: any) => {
     } else {
       updateLock(lock.id, name, undefined, address)
     }
-    close();
   };
 
   const onImageChange = (ev: any) => {
