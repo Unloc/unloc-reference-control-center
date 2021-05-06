@@ -43,7 +43,7 @@ const UpdateLockModal = (props: any) => {
     if(lock) {
       setName(lock.name)
       setImage(lock.imageUrl)
-      setAddress(lock.address || "")
+      setAddress(lock.address || undefined)
     }
   }, [lock]);
 
@@ -54,18 +54,7 @@ const UpdateLockModal = (props: any) => {
 
 
   const update = async () => {
-    if (image !== lock.imageUrl) {
-      try {
-        updateLock(lock.id, name, image, address)
-      } catch (err) {
-        setImageErrorMessage(
-          err.errorDescription + ". Check that the file is an image."
-        );
-        return;
-      }
-    } else {
-      updateLock(lock.id, name, undefined, address)
-    }
+      updateLock(lock.id, name)
   };
 
   const onImageChange = (ev: any) => {
@@ -88,7 +77,6 @@ const UpdateLockModal = (props: any) => {
             );
             return;
           }
-          await runActions();
         }
       };
       reader.readAsDataURL(file);
@@ -159,7 +147,7 @@ const UpdateLockModal = (props: any) => {
                   </div>
                 )}
               </div>
-              <button className="unloc-button" onClick={(_ => setAddressModalOpen(true))}> {address != undefined ? "Edit address" : "Add address"} </button>
+              <button className="unloc-button" onClick={(_ => setAddressModalOpen(true))}> {address !== undefined ? "Edit address" : "Add address"} </button>
               <h3>Image</h3>
               <div>
                 {image && <img alt="Lock" src={image} />}
