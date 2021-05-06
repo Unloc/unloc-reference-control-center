@@ -9,6 +9,7 @@ const AddressModal = (props: any) => {
   const [postalCode, setPostalCode] = useState(lock?.address?.postalCode)
   const [city, setCity] = useState(lock?.address?.city)
   const [countryIso, setCountryIso] = useState(lock?.address?.countryIso)
+  const [errorMessage, setErrorMessage] = useState("");
   const inputRef = useRef<HTMLInputElement>(null)
 
   React.useEffect(() => {
@@ -30,7 +31,14 @@ const AddressModal = (props: any) => {
 
   const updateAddress = async () => {
     const address: unloc.Address = {street, postalCode, city, countryIso}
-    await api.updateLock(lockHolder, lock.id, lock.name, undefined, address)
+    try {
+      await api.updateLock(lockHolder, lock.id, lock.name, undefined, address)
+    } catch (err) {
+      setErrorMessage(
+        err.errorDescription
+      );
+      return;
+    }
     close()
     await runActions()
   }
@@ -50,9 +58,12 @@ const AddressModal = (props: any) => {
             <TextInput value={postalCode} onChange={(e: any) => setPostalCode(e.target.value)} />
             <label>City</label>
             <TextInput value={city} onChange={(e: any) => setCity(e.target.value)} />
-            <label>Country</label>
+            <label>Country iso (two letters, eg "NO") </label>
             <TextInput value={countryIso} onChange={(e: any) => setCountryIso(e.target.value)} />
           </form>
+          {errorMessage && (
+                  <div className="error-message">{errorMessage}</div>
+                )}
         </div>
         <div className="modal-card-foot">
           <button className="button is-medium primary" onClick={close} >Cancel</button>
