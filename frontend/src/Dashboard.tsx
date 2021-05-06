@@ -173,7 +173,7 @@ const Dashboard = () => {
             <div className="control has-icons-left">
               <input
                 className="input is-medium"
-                placeholder="Search"
+                placeholder="Search for user"
                 type="text"
                 value={filterString}
                 onChange={updateFilter}
