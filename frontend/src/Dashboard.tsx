@@ -391,17 +391,17 @@ const Lock = (props: any) => {
       <div className="unloc-dashboard__lock-name">{name}</div>
       <div className="unloc-dashboard__lock-key-share">
         <div>
-          <div>Access</div>
-          <div className="unloc-dashboard__lock-key-share-number">
-            {" "}
-            {keysCreatedCount}
-          </div>
-        </div>
-        <div>
-          <div>Key sharing</div>
+          <div>Access with sharing</div>
           <div className="unloc-dashboard__lock-key-share-number">
             {" "}
             {canCreateKeysCount}
+          </div>
+        </div>
+        <div>
+          <div>Keys shared</div>
+          <div className="unloc-dashboard__lock-key-share-number">
+            {" "}
+            {keysCreatedCount}
           </div>
         </div>
       </div>
