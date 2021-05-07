@@ -305,8 +305,11 @@ export const AppProvider = (props: any) => {
   const createRole = (newRole: unloc.Role) => {
     dispatch({type: ActionType.ADD_ROLE, data: newRole})
   }
-  const removeRole = (lockId: string, userId: string) => {
+  const removeRole = async (lockId: string, userId: string) => {
     dispatch({type: ActionType.REMOVE_ROLE, data: {lockId, userId}})
+    addAction(async () =>
+    api.createOrUpdateRole(selectedLockHolder, lockId, userId, false)
+    );
   }
   const setLockHolders = (newLockHolders: unloc.LockHolder[]) => {
     dispatch({type: ActionType.UPDATE_LOCKHOLDERS, data: newLockHolders})
