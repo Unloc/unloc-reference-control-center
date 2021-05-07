@@ -167,7 +167,7 @@ const Dashboard = () => {
         notify={notify}
       />
       <header className="unloc-dashboard__header">
-        <h1>Unloc kontrollsenter</h1>
+        <h1>Unloc Demo</h1>
         {windowSize.width > 1000 && (
           <div className="field">
             <div className="control has-icons-left">
