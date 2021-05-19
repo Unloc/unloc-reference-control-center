@@ -305,15 +305,12 @@ export const AppProvider = (props: any) => {
   const createRole = (newRole: unloc.Role) => {
     dispatch({type: ActionType.ADD_ROLE, data: newRole})
   }
-  const removeRole = (lockId: string, userId: string) => {
+  const deleteRole = (lockId: string, userId: string) => {
     dispatch({type: ActionType.REMOVE_ROLE, data: {lockId, userId}})
-    addAction(async () =>
-    api.createOrUpdateRole(selectedLockHolder, lockId, userId, false)
-    );
   }
   
-  const deleteRole = async (lockId: string, userId: string) => {
-    removeRole(lockId, userId)
+  const removeRole = async (lockId: string, userId: string) => {
+    deleteRole(lockId, userId)
     addAction(async () =>
       api.createOrUpdateRole(selectedLockHolder, lockId, userId, false)
   );
