@@ -311,6 +311,13 @@ export const AppProvider = (props: any) => {
     api.createOrUpdateRole(selectedLockHolder, lockId, userId, false)
     );
   }
+  
+  const deleteRole = async (lockId: string, userId: string) => {
+    removeRole(lockId, userId)
+    addAction(async () =>
+      api.createOrUpdateRole(selectedLockHolder, lockId, userId, false)
+  );
+  }
   const setLockHolders = (newLockHolders: unloc.LockHolder[]) => {
     dispatch({type: ActionType.UPDATE_LOCKHOLDERS, data: newLockHolders})
   }
@@ -595,5 +602,4 @@ export const AppProvider = (props: any) => {
     </AppContext.Provider>
   )
 }
-
 
