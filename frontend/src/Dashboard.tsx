@@ -167,13 +167,13 @@ const Dashboard = () => {
         notify={notify}
       />
       <header className="unloc-dashboard__header">
-        <h1>Unloc kontrollsenter</h1>
+        <h1>Unloc Demo</h1>
         {windowSize.width > 1000 && (
           <div className="field">
             <div className="control has-icons-left">
               <input
                 className="input is-medium"
-                placeholder="Search"
+                placeholder="Search for user"
                 type="text"
                 value={filterString}
                 onChange={updateFilter}
@@ -391,17 +391,17 @@ const Lock = (props: any) => {
       <div className="unloc-dashboard__lock-name">{name}</div>
       <div className="unloc-dashboard__lock-key-share">
         <div>
-          <div>Access</div>
-          <div className="unloc-dashboard__lock-key-share-number">
-            {" "}
-            {keysCreatedCount}
-          </div>
-        </div>
-        <div>
-          <div>Key sharing</div>
+          <div>Access with sharing</div>
           <div className="unloc-dashboard__lock-key-share-number">
             {" "}
             {canCreateKeysCount}
+          </div>
+        </div>
+        <div>
+          <div>Keys shared</div>
+          <div className="unloc-dashboard__lock-key-share-number">
+            {" "}
+            {keysCreatedCount}
           </div>
         </div>
       </div>

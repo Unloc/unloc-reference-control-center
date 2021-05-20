@@ -305,8 +305,15 @@ export const AppProvider = (props: any) => {
   const createRole = (newRole: unloc.Role) => {
     dispatch({type: ActionType.ADD_ROLE, data: newRole})
   }
-  const removeRole = (lockId: string, userId: string) => {
+  const deleteRole = (lockId: string, userId: string) => {
     dispatch({type: ActionType.REMOVE_ROLE, data: {lockId, userId}})
+  }
+  
+  const removeRole = async (lockId: string, userId: string) => {
+    deleteRole(lockId, userId)
+    addAction(async () =>
+      api.createOrUpdateRole(selectedLockHolder, lockId, userId, false)
+  );
   }
   const setLockHolders = (newLockHolders: unloc.LockHolder[]) => {
     dispatch({type: ActionType.UPDATE_LOCKHOLDERS, data: newLockHolders})
@@ -332,23 +339,24 @@ export const AppProvider = (props: any) => {
     keys: unloc.Key[]
   ) => {
     let users = [
-      ...roles.map((role: any) => ({
-        userId: role.userId,
-        userDisplayName: role.userName,
-        keysCount: 0,
-        rolesCount: 0,
-      })),
       ...keys
         .filter((key: any) => key.state !== "revoked")
         .map((key: any) => ({
           userId: key.toUser.id,
-          userDisplayName: key.toUser.userName,
+          userDisplayName: key.toUser.name,
+          keysCount: 0,
+          rolesCount: 0,
+          profilePicture: key.toUser.imageUrl,
+        })),
+        ...roles.map((role: any) => ({
+          userId: role.userId,
+          userDisplayName: role.userName,
           keysCount: 0,
           rolesCount: 0,
         })),
     ];
     const uniqueUsers = getUniqueUsers(users);
-    setUsers(uniqueUsers.sort());
+    setUsers(uniqueUsers.sort((a, b) => (a.userDisplayName > b.userDisplayName) ? 1 : ((b.userDisplayName > a.userDisplayName) ? -1 : 0)));
   };
 
   const getUniqueUsers = (users: unloc.User[]) => {
@@ -591,5 +599,4 @@ export const AppProvider = (props: any) => {
     </AppContext.Provider>
   )
 }
-
 

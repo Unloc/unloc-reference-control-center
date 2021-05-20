@@ -39,12 +39,12 @@ const UserModal = (props: any) => {
     close();
     if (notifyOfSharing) {
       notify(
-        user.userDisplayName +
+        user.userDisplayName ? user.userDisplayName : user.userId +
           " has been given access to all doors" +
           notifyOfSharing
       );
     } else {
-      notify(user.userDisplayName + " has been given access to all doors");
+      notify(user.userDisplayName ? user.userDisplayName : user.userId + " has been given access to all doors");
     }
   };
 
